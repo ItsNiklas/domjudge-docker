@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# C++ compile wrapper-script for 'compile.sh'.
+# See that script for syntax and more info.
+
+DEST="$1" ; shift
+MEMLIMIT="$1" ; shift
+
+# Add -DONLINE_JUDGE or -DDOMJUDGE below if you want it make easier for teams
+# to do local debugging.
+
+# -x c++:   Explicitly set compile language to C++ (no object files or
+#           other languages autodetected by extension)
+# -std=c++2b Latest standard
+# -Wall:    Report all warnings
+# -Ofast:   Fast optimizations
+# -static:  Static link with all libraries
+# -pipe:    Use pipes for communication between stages of compilation
+g++-12 -std=gnu++2b -x c++ -Wall -Ofast -DONLINE_JUDGE -DDOMJUDGE -static -pipe -o "$DEST" "$@"
+exit $?

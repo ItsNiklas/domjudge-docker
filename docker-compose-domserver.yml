@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  domserver:
+    container_name: domserver
+    image: ghcr.io/wisvch/domjudge-packaging/domserver:8.2.0
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - domserver_public_volume:/opt/domjudge/domserver/webapp/public
+    ports:
+      - 12345:80
+    depends_on:
+      - mariadb
+    env_file:
+      - domserver.env
+    links:
+      - mariadb:mariadb
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    volumes:
+      - mariadb:/var/lib/mysql
+    ports:
+      - 13306:3306
+    env_file:
+      - domserver.env
+    command: --max-connections=1000 --innodb-log-file-size=2G --max-allowed-packet=100M
+
+  phpmyadmin:
+    container_name: myadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8888:80
+    depends_on:
+      - mariadb
+    env_file:
+      - domserver.env
+    links:
+      - mariadb:mariadb
+
+volumes:
+  domserver_public_volume:
+  mariadb:

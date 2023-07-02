@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Haskell compile wrapper-script for 'compile.sh'.
+# See that script for syntax and more info.
+
+DEST="$1" ; shift
+MEMLIMIT="$1" ; shift
+MAINSOURCE="$1"
+
+# Add -DONLINE_JUDGE or -DDOMJUDGE below if you want it make easier for teams
+# to do local debugging.
+
+# -x hs:    Explicitly only allow Haskell source (no object files or
+#           other intermediate files autodetected by extension, also
+#           disables literate Haskell (.lhs) files)
+# -Wall:    Report all warnings
+# -O:       Optimize
+# -static:  Static link Haskell libraries
+# -tmp dir: Set temporary compile dir, default is /tmp, which is not mounted.
+# -optl-static:  Pass '-static' option to the linker ERRORS :( C libraries will not be statically linked.
+
+ghc -tmpdir . -x hs -Wall -Wwarn -O2 -static -o "$DEST" "$@"
+exitcode=$?
+
+# clean created files:
+rm -f "$DEST.o" Main.hi
+
+exit $exitcode

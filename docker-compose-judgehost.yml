@@ -1,0 +1,35 @@
+version: '3.9'
+
+x-common-configuration: &common-configuration
+  image: domjudge/judgehost-extended:8.2.0
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  privileged: true
+  env_file:
+    - judgehost.env
+
+services:
+  judgedaemon4:
+    <<: *common-configuration
+    hostname: judgedaemon4
+    environment:
+      DAEMON_ID: 4
+
+  judgedaemon5:
+    <<: *common-configuration
+    hostname: judgedaemon5
+    environment:
+      DAEMON_ID: 5
+
+  judgedaemon6:
+    <<: *common-configuration
+    hostname: judgedaemon6
+    environment:
+      DAEMON_ID: 6
+
+  judgedaemon7:
+    <<: *common-configuration
+    hostname: judgedaemon7
+    environment:
+      DAEMON_ID: 7
+
