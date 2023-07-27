@@ -62,6 +62,23 @@ Go to the Config checker to verify that everything is set up correctly.
 If you need to, you can access the MariaDB by running:
 
     $ docker exec -it mariadb mariadb -u domjudge -pdjpw
+    MariaDB [(none)]> USE domjudge;
+
+or from the host:
+
+    $ mariadb -h localhost -P 13306 -u domjudge -pdjpw
+    MariaDB [(none)]> USE domjudge;
+
+## Upload limits
+
+To upload files larger than 256MB (e.g. large problem sets), use this to increase the limits in the fpm config:
+
+    $ docker exec -it domserver sed -ri -e 's/(php_admin_value\[memory_limit\] =).*/\1 -1/' -e 's/(php_admin_value\[upload_max_filesize\] =).*/\1 2G/' -e 's/(php_admin_value\[post_max_size\] =).*/\1 2G/' /opt/domjudge/domserver/etc/domjudge-fpm.conf
+    $ docker exec -it domserver supervisorctl restart php
+
+Admittedly, this is a bit hacky, but it works and is better than rebuilding the container.
+
+Also be sure to increase the `client_max_body_size` in your nginx config of the host server.
 
 # judgehost
 
@@ -90,8 +107,8 @@ script tries to install up-to-date versions of the languages, as of writing.
 
 Enter the judgehost container and chroot to verify that everything is set up correctly:
 
-    $ docker exec -it judgehost /bin/bash
-    $ docker exec -it judgehost /opt/domjudge/judgehost/bin/dj_run_chroot
+    $ docker exec -it judge-judgedaemonX-1 /bin/bash
+    $ docker exec -it judge-judgedaemonX-1 /opt/domjudge/judgehost/bin/dj_run_chroot
 
 Update the executables in the domserver as well, if you want to be sure that the versions match.
 As of writing, the following languages are installed:
@@ -110,7 +127,7 @@ As of writing, the following languages are installed:
 
 To update the containers, you need to rebuild the containers:
 
-    $ docker compose -f docker-compose-domserver.yml up -d --build
+    $ docker compose -f docker-compose-domserver.yml up -d
     $ docker compose -f docker-compose-judgehost.yml up -d --build
 
 Fortunately, the files in the `volumes` directory are persistent, so you don't
@@ -121,7 +138,7 @@ need to worry about losing your data.
 If you have problems trying to run the containers, you can check the logs:
 
     $ docker logs domserver
-    $ docker logs judgehost
+    $ docker logs judge-judgedaemonX-1 
 
 For more information, see the very helpful [DOMjudge docs](https://www.domjudge.org/docs/manual/),
 try to find help in the soure code, or ask me.

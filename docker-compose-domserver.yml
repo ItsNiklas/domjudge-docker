@@ -25,7 +25,7 @@ services:
       - 13306:3306
     env_file:
       - domserver.env
-    command: --max-connections=1000 --innodb-log-file-size=2G --max-allowed-packet=100M
+    command: --max-connections=1000 --innodb-log-file-size=2G --max-allowed-packet=1G
 
   phpmyadmin:
     container_name: myadmin
