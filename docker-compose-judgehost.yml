@@ -1,7 +1,7 @@
 version: '3.9'
 
 x-common-configuration: &common-configuration
-  image: domjudge/judgehost-extended:8.2.0
+  image: itsniklas/domjudge-judgehost-nightly:8.3.0DEV
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
   privileged: true

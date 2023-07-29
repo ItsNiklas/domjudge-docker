@@ -11,10 +11,14 @@ Use [Docker Compose](https://docs.docker.com/compose/) to build the images:
     $ docker compose -f docker-compose-domserver.yml up -d
     $ docker compose -f docker-compose-judgehost.yml up --build -d
 
-While the domserver container is prebuilt, you need to build the judgehost container yourself
-to facilitate the installation of the programming languages you want to support. You may need
-to run `./build.sh` in `judgehost` to build the container. This can take some time.
+Swap out the docker domjudge images to fit your needs. To support custom executables, you need to rebuild the judgehost container, see below.
 All environment variables can be set in the relevant `*.env` files.
+
+## Building
+
+The containers are built myself, the images are available on [Docker Hub](https://hub.docker.com/repositories/itsniklas).
+You can build the containers yourself by running `./build.sh` in domjudge-packaging. The packaging scripts are based on
+the official [DOMjudge/domjudge-packaging](https://github.com/DOMjudge/domjudge-packaging) and [WISVCH/domjudge-packaging](https://github.com/WISVCH/domjudge-packaging) repositories.
 
 # domserver
 
