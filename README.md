@@ -107,8 +107,8 @@ script tries to install up-to-date versions of the languages, as of writing.
 
 Enter the judgehost container and chroot to verify that everything is set up correctly:
 
-    $ docker exec -it judge-judgedaemonX-1 /bin/bash
-    $ docker exec -it judge-judgedaemonX-1 /opt/domjudge/judgehost/bin/dj_run_chroot
+    $ docker exec -it judgedaemonX /bin/bash
+    $ docker exec -it judgedaemonX /opt/domjudge/judgehost/bin/dj_run_chroot
 
 As of writing, the following languages are installed:
 
@@ -138,7 +138,7 @@ need to worry about losing your data.
 If you have problems trying to run the containers, you can check the logs:
 
     $ docker logs domserver
-    $ docker logs judge-judgedaemonX-1 
+    $ docker logs judgedaemonX
 
 For more information, see the very helpful [DOMjudge docs](https://www.domjudge.org/docs/manual/),
 try to find help in the soure code, or ask me.

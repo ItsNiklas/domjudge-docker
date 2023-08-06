@@ -12,24 +12,28 @@ services:
   judgedaemon4:
     <<: *common-configuration
     hostname: judgedaemon4
+    container_name: judgedaemon4
     environment:
       DAEMON_ID: 4
 
   judgedaemon5:
     <<: *common-configuration
     hostname: judgedaemon5
+    container_name: judgedaemon5
     environment:
       DAEMON_ID: 5
 
   judgedaemon6:
     <<: *common-configuration
     hostname: judgedaemon6
+    container_name: judgedaemon6
     environment:
       DAEMON_ID: 6
 
   judgedaemon7:
     <<: *common-configuration
     hostname: judgedaemon7
+    container_name: judgedaemon7
     environment:
       DAEMON_ID: 7
 
