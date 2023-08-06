@@ -3,6 +3,7 @@ name: Build and Publish DOMjudge
 on:
   schedule:
     - cron: '0 3 * * *' # Runs every day at 3 AM
+  workflow_dispatch:
 
 jobs:
   check:
@@ -41,7 +42,7 @@ jobs:
 
     - name: Get Latest Commit Hash
       run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-      
+
     - name: Checkout DOMjudge Docker Repository
       uses: actions/checkout@v2
       with:
