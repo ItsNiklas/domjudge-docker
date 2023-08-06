@@ -3,7 +3,7 @@ version: "3"
 services:
   domserver:
     container_name: domserver
-    image: itsniklas/domjudge-domserver-nightly:8.3.0DEV
+    image: itsniklas/domjudge-domserver-nightly:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       #- domserver_public_volume:/opt/domjudge/domserver/webapp/public
