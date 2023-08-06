@@ -3,7 +3,7 @@
 
 These Dockerfiles allow you to run [DOMjudge](https://www.domjudge.org) inside a
 Docker container. For all further configuration needs and advanced guides,
-see the [DOMjudge docs](https://www.domjudge.org/docs/manual/). The repository builds the latest nightly domjudge version daily and pushes it to [Docker Hub](https://hub.docker.com/r/itsniklas/).
+see the [DOMjudge docs](https://www.domjudge.org/docs/manual/). The repository builds the latest nightly DOMjudge version daily and pushes it to [Docker Hub](https://hub.docker.com/r/itsniklas/).
 
 ## Setup
 
@@ -12,7 +12,7 @@ Use [Docker Compose](https://docs.docker.com/compose/) to build the images:
     $ docker compose -f docker-compose-domserver.yml up -d
     $ docker compose -f docker-compose-judgehost.yml up -d
 
-Swap out the docker domjudge images to fit your needs. To support custom executables, you need to rebuild the judgehost container, see below.
+Swap out the docker `domjudge` images to fit your needs. To support custom executables, you need to rebuild the `judgehost` container, see below.
 All environment variables can be set in the relevant `*.env` files.
 
 ## Building
@@ -25,7 +25,7 @@ The packaging scripts are based on the official [DOMjudge/domjudge-packaging](ht
 
 The domserver compose file comes bundled with a MariaDB container. If you want
 to use this, you only need to specify a password for the mysql root user and for
-the domjudge user by setting `MYSQL_ROOT_PASSWORD` to the root password, and
+the `domjudge` user by setting `MYSQL_ROOT_PASSWORD` to the root password, and
 `MYSQL_PASSWORD` to the domjudge user password. It is also possible to specify
 a database name and domjudge user name (both default to `domjudge`) by setting
 `MYSQL_DATABASE` and `MYSQL_USER`.
@@ -102,7 +102,7 @@ for cgroups: `cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarch
 
 The judgehost is based on `ubuntu:jammy`. If you want to support more programming languages, you need to edit
 `install_languages.sh` inside the docker folder to enable, disable, add or update languages.
-You can add arbitrary packages or ppa's to support more. Currently, the
+You can add arbitrary packages or PPAs to support more. Currently, the
 script tries to install up-to-date versions of the languages, as of writing.
 
 Enter the judgehost container and chroot to verify that everything is set up correctly:
@@ -124,12 +124,13 @@ As of writing, the following languages are installed:
 
 # Updating
 
-To update the containers, you need to restart the containers by running:
+To update the containers, fetch the latest images or change the version specified 
+in the compose file by running:
 
-    $ docker compose -f docker-compose-domserver.yml restart
-    $ docker compose -f docker-compose-judgehost.yml restart
+    $ docker compose -f docker-compose-domserver.yml pull
+    $ docker compose -f docker-compose-judgehost.yml pull
 
-This will pull the latest images from Docker Hub and restart the containers.
+Then run the setup from above to recreate and restart the containers.
 Fortunately, the files in the `volumes` directory are persistent, so you don't
 need to worry about losing your data.
 
@@ -141,7 +142,7 @@ If you have problems trying to run the containers, you can check the logs:
     $ docker logs judgedaemonX
 
 For more information, see the very helpful [DOMjudge docs](https://www.domjudge.org/docs/manual/),
-try to find help in the soure code, or ask me.
+try to find help in the source code, or ask me.
 
 # Credits
 

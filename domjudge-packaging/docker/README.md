@@ -19,7 +19,7 @@ These containers do not include MySQL / MariaDB; the [MariaDB](https://hub.docke
 ## Using the images
 
 These images are available on the [Docker Hub](https://hub.docker.com) as `domjudge/domserver` and `domjudge/judgehost`.
-Custom nightlies are at `itsniklas/domjudge-domserver-nightly` and `itsniklas/domjudge-judgehost-nightly`.
+Custom daily builds are located at `itsniklas/domjudge-domserver-nightly` and `itsniklas/domjudge-judgehost-nightly`.
 
 Images created from this repository are automatically built every night and pushed to the Docker Hub.
 
@@ -46,7 +46,7 @@ The images in this repository are already customized to a certain extent. Most i
 
 ### Domjudge
 
-The image initalizes itself with the `start.sh` script.
+The image initializes itself with the `start.sh` script.
 This script runs all executable files in `/scripts/start.d/` in alphabetical order.
 Before that, all files from `/scripts/start.ro/` are copied into the `start.d` folder.
 To customize any settings (e.g. modify the nginx config), add scripts to `start.ro` via a bind mount.
