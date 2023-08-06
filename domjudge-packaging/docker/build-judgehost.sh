@@ -30,7 +30,7 @@ docker build -t "${docker_tag}-build" -f judgehost/Dockerfile .
 
 docker rm -f "${builder_name}" 2>&1 || echo "[DEBUG] No existing container found for languages installation."
 
-docker run -it --name "${builder_name}" --privileged "${docker_tag}-build" /install_languages.sh
+docker run --name "${builder_name}" --privileged "${docker_tag}-build" /install_languages.sh
 docker commit -c "CMD [\"/scripts/start.sh\"]" "${builder_name}" "${docker_tag}"
 
 docker rm "${builder_name}" 2>&1 || echo "[DEBUG] No container found to remove post installation."
