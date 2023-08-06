@@ -1,15 +1,16 @@
 # Docker for DOMjudge
+[![Build and Publish DOMjudge](https://github.com/ItsNiklas/domjudge-docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/ItsNiklas/domjudge-docker/actions/workflows/docker-image.yml)
 
 These Dockerfiles allow you to run [DOMjudge](https://www.domjudge.org) inside a
 Docker container. For all further configuration needs and advanced guides,
-see the [DOMjudge docs](https://www.domjudge.org/docs/manual/).
+see the [DOMjudge docs](https://www.domjudge.org/docs/manual/). The repository builds the latest nightly domjudge version daily and pushes it to [Docker Hub](https://hub.docker.com/r/itsniklas/).
 
 ## Setup
 
 Use [Docker Compose](https://docs.docker.com/compose/) to build the images:
 
     $ docker compose -f docker-compose-domserver.yml up -d
-    $ docker compose -f docker-compose-judgehost.yml up --build -d
+    $ docker compose -f docker-compose-judgehost.yml up -d
 
 Swap out the docker domjudge images to fit your needs. To support custom executables, you need to rebuild the judgehost container, see below.
 All environment variables can be set in the relevant `*.env` files.
@@ -17,8 +18,8 @@ All environment variables can be set in the relevant `*.env` files.
 ## Building
 
 The containers are built myself, the images are available on [Docker Hub](https://hub.docker.com/repositories/itsniklas).
-You can build the containers yourself by running `./build.sh` in domjudge-packaging. The packaging scripts are based on
-the official [DOMjudge/domjudge-packaging](https://github.com/DOMjudge/domjudge-packaging) and [WISVCH/domjudge-packaging](https://github.com/WISVCH/domjudge-packaging) repositories.
+You can build the containers yourself by taking a look at the [README](domjudge-packaging/docker/README.md).
+The packaging scripts are based on the official [DOMjudge/domjudge-packaging](https://github.com/DOMjudge/domjudge-packaging) and [WISVCH/domjudge-packaging](https://github.com/WISVCH/domjudge-packaging) repositories.
 
 # domserver
 
@@ -43,17 +44,9 @@ the port to the container, e.g. using `nginx`.
 
 ## Configuration
 
-Custom executables are shipped in the `executables` directory. You can add them
+Custom executables are provided in the `executables` directory. You can add them
 using the web interface. In particular, `ghc` will have some problems with the default
-configuration, so you will need to add a custom executable.
-
-A sample `docs.yaml` file is included to enable the Documentation tab in the web interface.
-This lists the versions of the software used in the competition. You can edit this file to suit your needs.
-It should match the versions installed by `install_languages.sh` in the judgehost container. The entries
-link to their respective documentation pages.
-
-    $ docker cp docs.yaml domserver:/opt/domjudge/domserver/etc/
-    $ docker exec -it domserver /opt/domjudge/domserver/webapp/bin/console cache:clear
+configuration, so you will need to look at a custom executable.
 
 Most of your configuration will be done in the web interface. You can log in
 using the username `admin` and the password displayed in the logs of the
@@ -73,9 +66,12 @@ or from the host:
     $ mariadb -h localhost -P 13306 -u domjudge -pdjpw
     MariaDB [(none)]> USE domjudge;
 
+Version 8.3 also adds an Adminer container in the web interface to access the database.
+
 ## Upload limits
 
-To upload files larger than 256MB (e.g. large problem sets), use this to increase the limits in the fpm config:
+The custom built images have these limits set to 2GB by default!
+Otherwise, to upload files larger than 256MB (e.g. large problem sets), use this to increase the limits in the fpm config:
 
     $ docker exec -it domserver sed -ri -e 's/(php_admin_value\[memory_limit\] =).*/\1 -1/' -e 's/(php_admin_value\[upload_max_filesize\] =).*/\1 2G/' -e 's/(php_admin_value\[post_max_size\] =).*/\1 2G/' /opt/domjudge/domserver/etc/domjudge-fpm.conf
     $ docker exec -it domserver supervisorctl restart php
@@ -105,7 +101,7 @@ for cgroups: `cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarch
 ## Configuration
 
 The judgehost is based on `ubuntu:jammy`. If you want to support more programming languages, you need to edit
-`judgehost/install_languages.sh` to enable, disable, add or update languages.
+`install_languages.sh` inside the docker folder to enable, disable, add or update languages.
 You can add arbitrary packages or ppa's to support more. Currently, the
 script tries to install up-to-date versions of the languages, as of writing.
 
@@ -114,7 +110,6 @@ Enter the judgehost container and chroot to verify that everything is set up cor
     $ docker exec -it judge-judgedaemonX-1 /bin/bash
     $ docker exec -it judge-judgedaemonX-1 /opt/domjudge/judgehost/bin/dj_run_chroot
 
-Update the executables in the domserver as well, if you want to be sure that the versions match.
 As of writing, the following languages are installed:
 
 - Bash (GNU Bash 5.1)
@@ -129,11 +124,12 @@ As of writing, the following languages are installed:
 
 # Updating
 
-To update the containers, you need to rebuild the containers:
+To update the containers, you need to restart the containers by running:
 
-    $ docker compose -f docker-compose-domserver.yml up -d
-    $ docker compose -f docker-compose-judgehost.yml up -d --build
+    $ docker compose -f docker-compose-domserver.yml restart
+    $ docker compose -f docker-compose-judgehost.yml restart
 
+This will pull the latest images from Docker Hub and restart the containers.
 Fortunately, the files in the `volumes` directory are persistent, so you don't
 need to worry about losing your data.
 

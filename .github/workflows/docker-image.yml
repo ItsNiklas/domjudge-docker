@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout DOMjudge Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: 'domjudge/domjudge'
         ref: 'main'
