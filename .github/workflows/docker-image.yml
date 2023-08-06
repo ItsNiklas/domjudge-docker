@@ -39,18 +39,22 @@ jobs:
       with:
         repository: 'domjudge/domjudge'
         ref: 'main'
+        path: 'domjudge'
 
     - name: Get Latest Commit Hash
-      run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+      run: cd domjudge && echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
     - name: Checkout DOMjudge Docker Repository
       uses: actions/checkout@v2
       with:
         path: 'domjudge-docker'
 
-    - name: Download DOMjudge Snapshot
-      run: wget https://www.domjudge.org/snapshot/domjudge-snapshot-$(date +%Y%m%d).tar.gz -O domjudge-docker/domjudge-packaging/docker/domjudge.tar.gz
-
+    # - name: Download DOMjudge Snapshot
+    #   run: wget https://www.domjudge.org/snapshot/domjudge-snapshot-$(date +%Y%m%d).tar.gz -O domjudge-docker/domjudge-packaging/docker/domjudge.tar.gz
+    
+    - name: Create DOMjudge Snapshot
+      run: tar -czf domjudge-docker/domjudge-packaging/docker/domjudge.tar.gz domjudge
+    
     - name: Build DOMjudge
       run: |
         cd domjudge-docker/domjudge-packaging/docker/
