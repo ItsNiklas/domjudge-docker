@@ -2,7 +2,7 @@ name: Build and Publish DOMjudge
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Runs every day at 3 AM
+    - cron: '0 2 * * *' # Runs every day at 2 AM Z
   workflow_dispatch:
 
 jobs:
@@ -21,11 +21,21 @@ jobs:
     - name: Get Latest Commit Hash
       run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-    - name: Try Pulling the Image with Specific Tag and Set Output
+    - name: Check if the Image with Specific Tag Exists
       id: check-commit
       continue-on-error: true
       run: |
-        docker pull itsniklas/domjudge-domserver-nightly:8.3.0DEV-${{ env.COMMIT_HASH }}
+        TAG=8.3.0DEV-${{ env.COMMIT_HASH }}
+        REPO='itsniklas/domjudge-domserver-nightly'
+
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://hub.docker.com/v2/repositories/${REPO}/tags/${TAG})
+
+        if [ "$STATUS" -eq 200 ]; then
+          echo "Image exists."
+        else
+          echo "Image does not exist."
+          exit 1
+        fi
 
   build:
     needs: check
