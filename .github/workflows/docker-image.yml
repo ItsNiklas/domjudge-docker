@@ -17,19 +17,22 @@ jobs:
       with:
         repository: 'domjudge/domjudge'
         ref: 'main'
+        path: 'domjudge'
 
-    - name: Get Latest Commit Hash
-      run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+    # If the version contains DEV, add the hash.
+    - name: Get Version and Set TAG
+      run: |
+        cd domjudge
+        VERSION=$(grep 'version' README.md | sed -n '1s/^.*version //p')
+        [[ $VERSION == *DEV* ]] && TAG="${VERSION}-$(git rev-parse --short=7 HEAD)" || TAG="${VERSION}"
+        echo "TAG=${TAG}" >> $GITHUB_ENV
 
     - name: Check if the Image with Specific Tag Exists
       id: check-commit
       continue-on-error: true
       run: |
-        TAG=8.3.0DEV-${{ env.COMMIT_HASH }}
         REPO='itsniklas/domjudge-domserver-nightly'
-
-        STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://hub.docker.com/v2/repositories/${REPO}/tags/${TAG})
-
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://hub.docker.com/v2/repositories/${REPO}/tags/${{ env.TAG }})
         if [ "$STATUS" -eq 200 ]; then
           echo "Image exists."
         else
@@ -43,7 +46,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Rest of the steps for building and publishing
     - name: Checkout DOMjudge Repository
       uses: actions/checkout@v3
       with:
@@ -51,31 +53,33 @@ jobs:
         ref: 'main'
         path: 'domjudge'
 
-    - name: Get Latest Commit Hash
-      run: cd domjudge && echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+    # If the version contains DEV, add the hash.
+    - name: Get Version and Set TAG
+      run: |
+        cd domjudge
+        VERSION=$(grep 'version' README.md | sed -n '1s/^.*version //p')
+        [[ $VERSION == *DEV* ]] && TAG="${VERSION}-$(git rev-parse --short=7 HEAD)" || TAG="${VERSION}"
+        echo "TAG=${TAG}" >> $GITHUB_ENV
 
     - name: Checkout DOMjudge Docker Repository
       uses: actions/checkout@v3
       with:
         path: 'domjudge-docker'
 
-    # - name: Download DOMjudge Snapshot
-    #   run: wget https://www.domjudge.org/snapshot/domjudge-snapshot-$(date +%Y%m%d).tar.gz -O domjudge-docker/domjudge-packaging/docker/domjudge.tar.gz
-    
     - name: Create DOMjudge Snapshot
       run: tar -czf domjudge-docker/domjudge-packaging/docker/domjudge.tar.gz domjudge
-    
+
     - name: Build DOMjudge
       run: |
         cd domjudge-docker/domjudge-packaging/docker/
-        ./build-domjudge.sh itsniklas/domjudge-domserver-nightly:8.3.0DEV-${{ env.COMMIT_HASH }}
-        docker tag itsniklas/domjudge-domserver-nightly:8.3.0DEV-${{ env.COMMIT_HASH }} itsniklas/domjudge-domserver-nightly:latest
+        ./build-domjudge.sh itsniklas/domjudge-domserver-nightly:${{ env.TAG }}
+        docker tag itsniklas/domjudge-domserver-nightly:${{ env.TAG }} itsniklas/domjudge-domserver-nightly:latest
 
     - name: Build Judgehost
       run: |
         cd domjudge-docker/domjudge-packaging/docker/
-        ./build-judgehost.sh itsniklas/domjudge-judgehost-nightly:8.3.0DEV-${{ env.COMMIT_HASH }}
-        docker tag itsniklas/domjudge-judgehost-nightly:8.3.0DEV-${{ env.COMMIT_HASH }} itsniklas/domjudge-judgehost-nightly:latest
+        ./build-judgehost.sh itsniklas/domjudge-judgehost-nightly:${{ env.TAG }}
+        docker tag itsniklas/domjudge-judgehost-nightly:${{ env.TAG }} itsniklas/domjudge-judgehost-nightly:latest
 
     - name: Login to Docker Hub
       uses: docker/login-action@v2
@@ -85,10 +89,11 @@ jobs:
 
     - name: Publish DOMjudge Image
       run: |
-        docker push itsniklas/domjudge-domserver-nightly:8.3.0DEV-${{ env.COMMIT_HASH }}
+        docker push itsniklas/domjudge-domserver-nightly:${{ env.TAG }}
         docker push itsniklas/domjudge-domserver-nightly:latest
 
     - name: Publish Judgehost Image
       run: |
-        docker push itsniklas/domjudge-judgehost-nightly:8.3.0DEV-${{ env.COMMIT_HASH }}
+        docker push itsniklas/domjudge-judgehost-nightly:${{ env.TAG }}
         docker push itsniklas/domjudge-judgehost-nightly:latest
+
