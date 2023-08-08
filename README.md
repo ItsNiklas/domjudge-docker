@@ -35,6 +35,8 @@ persistent storage. These can be found in the default `volumes` directory of doc
 The domserver volume just contains the webapp root, while the MariaDB volume
 contains the whole database.
 
+It is recommended to read this document carefully before starting the containers.
+
 ## Usage
 
 The domserver will be available on port `12345` of the container host. You can
@@ -95,8 +97,13 @@ by setting `DOMSERVER_HOST`, `JUDGEDAEMON_PASSWORD`. You can set `DOMJUDGE_USER`
 as well, but it defaults to `judgehost`. You should also specify a hostname for
 this container to identify it in the domserver.
 
-You also need to specify the following kernel parameters on the container host
-for cgroups: `cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0`.
+Most importantly: You need to specify the following kernel parameters on the container host
+to enable cgroups:
+
+    $ cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=0 isolcpus=2
+
+This is done by editing `/etc/default/grub` and adding the parameters to `GRUB_CMDLINE_LINUX_DEFAULT`.
+Then run `sudo update-grub` and reboot.
 
 ## Configuration
 
@@ -130,7 +137,7 @@ in the compose file by running:
     $ docker compose -f docker-compose-domserver.yml pull
     $ docker compose -f docker-compose-judgehost.yml pull
 
-Then run the setup from above to recreate and restart the containers.
+Then run the setup from above (`up -d`) to recreate and restart the containers.
 Fortunately, the files in the `volumes` directory are persistent, so you don't
 need to worry about losing your data.
 
