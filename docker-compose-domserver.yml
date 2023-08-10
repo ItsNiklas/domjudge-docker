@@ -6,7 +6,10 @@ services:
     image: itsniklas/domjudge-domserver-nightly:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      #- domserver_public_volume:/opt/domjudge/domserver/webapp/public
+      - domserver_public_images:/opt/domjudge/domserver/webapp/public/images
+      - domserver_public_css:/opt/domjudge/domserver/webapp/css/custom
+      - domserver_public_js:/opt/domjudge/domserver/webapp/public/js/custom
+      - domserver_public_docs:/opt/domjudge/domserver/webapp/public/docs
     ports:
       - 12345:80
     depends_on:
@@ -40,5 +43,8 @@ services:
       - mariadb:mariadb
 
 volumes:
-  domserver_public_volume:
   mariadb:
+  domserver_public_images:
+  domserver_public_css:
+  domserver_public_js:
+  domserver_public_docs:
