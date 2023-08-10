@@ -18,6 +18,7 @@ services:
       - domserver.env
     links:
       - mariadb:mariadb
+    restart: on-failure:3
 
   mariadb:
     container_name: mariadb

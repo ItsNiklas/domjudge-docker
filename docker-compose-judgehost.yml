@@ -2,6 +2,7 @@ version: '3.9'
 
 x-common-configuration: &common-configuration
   image: itsniklas/domjudge-judgehost-nightly:latest
+  restart: on-failure:5
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
   privileged: true
