@@ -7,8 +7,8 @@ There is one container for running the domserver and one for running a judgehost
 The domserver container contains:
 
 * A setup script that will:
-    * Set up or update the database.
-    * Set up the webserver.
+  * Set up or update the database.
+  * Set up the webserver.
 * PHP-FPM and nginx for running the web interface.
 * Scripts for reading the log files of the webserver.
 
@@ -34,10 +34,12 @@ If you want to build the images yourself, you can just run
 where `version` is the DOMjudge version to create the images for, e.g. `8.2.0`.
 
 To build domjudge with local sources, run
+
 ```bash
   ./build-domjudge.sh [docker-tag]
   ./build-judgehost.sh [docker-tag]
 ```
+
 Note that the source directory name has to match `domjudge`.
 
 ## Customizing the image
