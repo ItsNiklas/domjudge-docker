@@ -22,7 +22,9 @@ install_java() {
 }
 
 install_pypy3() {
+	# Python in root may be required for custom compare scripts.
 	CHROOT_PACKAGES="python3.11-full python3-pip pypy3 $CHROOT_PACKAGES"
+	DEB_PACKAGES="python3.11-full python3-pip pypy3 $DEB_PACKAGES"
 }
 
 install_csharp() {
@@ -67,6 +69,7 @@ install_debs() {
 	# execute command on home root
 	apt update &&
 	apt install -y --no-install-recommends --no-install-suggests ${DEB_PACKAGES} &&
+	python3.11 -m pip install --no-input ${PY_PACKAGES} &&
 	apt autoremove -y &&
 	apt clean &&
 	rm -rf /var/lib/apt/lists/* &&
