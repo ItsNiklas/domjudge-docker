@@ -46,6 +46,8 @@ Note that the source directory name has to match `domjudge`.
 
 The images in this repository are already customized to a certain extent. Most importantly, they install custom language runtimes for the judgehost in `install_languages.sh`.
 
+REMOTE_USER authentication is enabled using the scripts in `patches.d`.
+
 ### Domjudge
 
 The image initializes itself with the `start.sh` script.
