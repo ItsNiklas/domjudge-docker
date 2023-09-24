@@ -40,11 +40,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 ADD domjudge.tar.gz /domjudge-src
 COPY domserver/build.sh /domjudge-src/build.sh
 
-# Apply patches
-COPY domserver/scripts/patches.sh /scripts/patches.sh
-COPY domserver/scripts/patches.d /scripts/patches.d
-RUN chmod 700 /scripts/patches.sh && /scripts/patches.sh
-
 # Build and install domserver
 RUN /domjudge-src/build.sh
 
@@ -102,6 +97,11 @@ ENV PATH="$PATH:/opt/domjudge/domserver/bin"
 # Run customizations
 COPY domserver/configure.sh /configure.sh
 RUN chmod 700 /configure.sh && /configure.sh && rm -f /configure.sh
+
+# Apply patches
+COPY domserver/scripts/patches.sh /scripts/patches.sh
+COPY domserver/scripts/patches.d /scripts/patches.d
+RUN chmod 700 /scripts/patches.sh && /scripts/patches.sh
 
 # Expose HTTP port
 EXPOSE 80
