@@ -43,6 +43,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 ADD domjudge.tar.gz /domjudge-src
 COPY domserver/build.sh /domjudge-src/build.sh
 
+# Apply git patches
+COPY domserver/patches /domjudge-src/patches
+RUN cd /domjudge-src/domjudge && git apply ../patches/*.patch
+
 # Build and install domserver
 RUN /domjudge-src/build.sh
 
