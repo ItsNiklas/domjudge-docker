@@ -3,13 +3,14 @@ version: "3"
 services:
   domserver:
     container_name: domserver
-    image: itsniklas/domjudge-domserver-nightly:latest
+    image: itsniklas/domjudge-domserver-pythoncourse:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup
       - domserver_public_images:/opt/domjudge/domserver/webapp/public/images
       - domserver_public_css:/opt/domjudge/domserver/webapp/public/css/custom
       - domserver_public_js:/opt/domjudge/domserver/webapp/public/js/custom
       - domserver_public_docs:/opt/domjudge/domserver/webapp/public/docs
+    privileged: true
     ports:
       - 12345:80
     depends_on:
@@ -18,7 +19,10 @@ services:
       - domserver.env
     links:
       - mariadb:mariadb
-    restart: on-failure:3
+    restart: unless-stopped
+    networks:
+      - default
+      - grafana_default
 
   mariadb:
     container_name: mariadb
@@ -30,6 +34,7 @@ services:
     env_file:
       - domserver.env
     command: --max-connections=1000 --innodb-log-file-size=2G --max-allowed-packet=1G --net_read_timeout=3600 --net_write_timeout=3600
+    restart: unless-stopped
 
   phpmyadmin:
     container_name: myadmin
@@ -49,3 +54,12 @@ volumes:
   domserver_public_css:
   domserver_public_js:
   domserver_public_docs:
+
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
+  grafana_default: # Connect with Prometheus
+    external: true
