@@ -1,0 +1,180 @@
+From 75181ba1065ec51e46b265f4ea24f27d585c4562 Mon Sep 17 00:00:00 2001
+From: "niklas.bauer01" <niklas.bauer01@stud.uni-goettingen.de>
+Date: Thu, 16 Nov 2023 23:32:52 +0100
+Subject: [PATCH] Course
+
+---
+ .../src/Controller/Team/CourseController.php  | 107 ++++++++++++++++++
+ webapp/templates/team/course.html.twig        |  30 +++++
+ webapp/templates/team/menu.html.twig          |   4 +
+ 3 files changed, 141 insertions(+)
+ create mode 100644 webapp/src/Controller/Team/CourseController.php
+ create mode 100644 webapp/templates/team/course.html.twig
+
+diff --git a/webapp/src/Controller/Team/CourseController.php b/webapp/src/Controller/Team/CourseController.php
+new file mode 100644
+index 000000000..23e23f9a1
+--- /dev/null
++++ b/webapp/src/Controller/Team/CourseController.php
+@@ -0,0 +1,107 @@
++<?php declare(strict_types=1);
++
++namespace App\Controller\Team;
++
++use App\Controller\BaseController;
++use Doctrine\ORM\EntityManagerInterface;
++use Symfony\Component\Routing\Annotation\Route;
++use Symfony\Component\HttpFoundation\Response;
++
++#[Route(path: '/team')]
++class CourseController extends BaseController
++{
++    private EntityManagerInterface $entityManager;
++
++    const TOTAL_QUESTIONS = 30; // Assuming these are your constants
++    const MIN_CORRECT_TO_PASS = 18;
++    const MIN_WEEKS_TO_PASS = 5;
++    const PASS_PERCENTAGE = 60;
++
++    public function __construct(
++        EntityManagerInterface $entityManager
++        // ... other dependencies ...
++    ) {
++        $this->entityManager = $entityManager;
++        // ... initialize other dependencies ...
++    }
++
++    #[Route(path: '/course', name: 'team_course')]
++    public function courseAction(): Response
++    {
++        $sql = "SELECT team.name,
++        team.externalid,
++        SUM(filtered_scorecache.is_correct_public)                                                  as total_correct,
++        SUM(IF(filtered_scorecache.shortname = 'week01', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_1,
++        SUM(IF(filtered_scorecache.shortname = 'week02', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_2,
++        SUM(IF(filtered_scorecache.shortname = 'week03', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_3,
++        SUM(IF(filtered_scorecache.shortname = 'week04', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_4,
++        SUM(IF(filtered_scorecache.shortname = 'week05', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_5,
++        SUM(IF(filtered_scorecache.shortname = 'week06', filtered_scorecache.is_correct_public,
++               0))                                                                                  as total_correct_week_6
++            FROM (SELECT teamid, shortname, is_correct_public, runtime_public
++                FROM scorecache
++                            INNER JOIN contest ON scorecache.cid = contest.cid
++                WHERE shortname LIKE 'week%') AS filtered_scorecache
++                    INNER JOIN team ON filtered_scorecache.teamid = team.teamid
++                    INNER JOIN user ON user.teamid = team.teamid
++            WHERE team.categoryid = 3          -- students
++            AND user.first_login IS NOT NULL -- no ghosts
++            AND (team.externalid IS NULL OR team.externalid != 'team_niklas.bauer01')
++            GROUP BY team.name
++            ORDER BY total_correct DESC, SUM(filtered_scorecache.runtime_public);
++        ";
++
++        $connection = $this->entityManager->getConnection();
++        $stmt = $connection->prepare($sql);
++        $results = $stmt->executeQuery()->fetchAllAssociative();
++
++        $maxCorrect = !empty($results) ? max(array_column($results, 'total_correct')) : 0;
++        $data = [];
++
++        $data = [];
++        foreach ($results as $index => $result) {
++            $teamName = $result['name'];
++            $totalCorrect = (int) $result['total_correct'];
++
++            // Calculate weeks with at least 2 correct answers across all CIDs
++            $weeks = 0;
++            for ($week = 1; $week <= 6; $week++) {
++                if ((int) $result["total_correct_week_$week"] >= 2) {
++                    $weeks++;
++                }
++            }
++
++            // Determine if the team passed
++            $passed = $totalCorrect >= self::MIN_CORRECT_TO_PASS && $weeks >= self::MIN_WEEKS_TO_PASS ? 'Yes' : 'No';
++
++            $data[$teamName] = [
++                'correct' => $totalCorrect,
++                'weeks' => $weeks,
++                'passed' => $passed,
++                'index' => $index,
++                'teamName' => $teamName,
++            ];
++        }
++
++        usort($data, function ($a, $b) {
++            if ($a['weeks'] == $b['weeks']) {
++                return $a['index'] <=> $b['index']; // Maintain original order if weeks are the same
++            }
++            return $b['weeks'] <=> $a['weeks']; // Sort by weeks in descending order
++        });
++
++        return $this->render('team/course.html.twig', [
++            'data' => $data,
++            'maxCorrect' => $maxCorrect,
++            'totalQuestions' => self::TOTAL_QUESTIONS,
++            'minCorrectToPass' => self::MIN_CORRECT_TO_PASS,
++            'minWeeksToPass' => self::MIN_WEEKS_TO_PASS,
++            'passPercentage' => self::PASS_PERCENTAGE,
++        ]);
++    }
++}
+diff --git a/webapp/templates/team/course.html.twig b/webapp/templates/team/course.html.twig
+new file mode 100644
+index 000000000..796fa256c
+--- /dev/null
++++ b/webapp/templates/team/course.html.twig
+@@ -0,0 +1,30 @@
++{% extends 'team/base.html.twig' %}
++
++{% block body %}
++<div class="container-fluid">
++    <table class="scoreboard center scoreboard_jury">
++        <thead>
++            <tr class="scoreheader">
++                <th class="px-2">team name</th>
++                <th class="px-2">total correct</th>
++                <th class="px-2">percentage</th>
++                <th class="px-2">weeks</th>
++                <th class="px-2">passed</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for teamName, info in data %}
++                {% set passed = (info.correct >= minCorrectToPass and info.weeks >= minWeeksToPass) ? 'Yes' : 'No' %}
++                {% set percentage = (info.correct / totalQuestions * 100)|round %}
++                <tr class="{{ loop.first ? 'sortorderswitch' : '' }}">
++                    <td class="scoretn">{{ info.teamName }}</td>
++                    <td class="scoretc {{ info.correct == maxCorrect ? 'fw-bold' : '' }}">{{ info.correct }}</td>
++                    <td class="scoretc">{{ percentage }}% / {{ passPercentage }}%</td>
++                    <td class="scoretc">{{ info.weeks }} / {{ minWeeksToPass }}</td>
++                    <td class="{{ passed == 'Yes' ? 'score_correct' : '' }}">{{ passed }}</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
++</div>
++{% endblock %}
+diff --git a/webapp/templates/team/menu.html.twig b/webapp/templates/team/menu.html.twig
+index 56d7aa183..0cdbdb882 100644
+--- a/webapp/templates/team/menu.html.twig
++++ b/webapp/templates/team/menu.html.twig
+@@ -46,6 +46,10 @@
+                         href="{{ path('team_docs') }}"><i class="fas fa-file-alt"></i> Docs</a>
+                 </li>
+             {% endif %}
++            <li class="nav-item">
++                <a class="nav-link{% if current_route == 'team_course' %} active{% endif %}"
++                    href="{{ path('team_course') }}"><i class="fas fa-book"></i> Course</a>
++            </li>
+ 
+             {% if is_granted('ROLE_JURY') or is_granted('ROLE_BALLOON') %}
+                 <li class="nav-item">
+-- 
+2.34.1
+
