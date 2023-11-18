@@ -2,6 +2,10 @@ name: Build and Publish DOMjudge
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - pythoncourse
+  
 
 jobs:
   build:
@@ -11,8 +15,8 @@ jobs:
     - name: Checkout DOMjudge Repository
       uses: actions/checkout@v3
       with:
-        repository: 'domjudge/domjudge'
-        ref: 'main'
+        repository: 'ItsNiklas/domjudge'
+        ref: 'pythoncourse'
         path: 'domjudge'
 
     # If the version contains DEV, add the hash.
