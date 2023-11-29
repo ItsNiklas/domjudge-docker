@@ -157,3 +157,4 @@ try to find help in the source code, or ask me.
 ## Credits
 
 This repository is based on [WISVCH/docker-domjudge](https://github.com/WISVCH/docker-domjudge) with aspects of [DOMjudge/domjudge](https://github.com/DOMjudge/domjudge/) and more.
+
