@@ -1,32 +1,35 @@
-FROM debian:bullseye-slim AS domserver-build
+FROM debian:bookworm-slim AS domserver-build
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Need to add php 8 repo
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
 	lsb-release ca-certificates apt-transport-https software-properties-common gnupg2 curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
 RUN curl -fsSL  https://packages.sury.org/php/apt.gpg| gpg --dearmor -o /etc/apt/trusted.gpg.d/sury-keyring.gpg
 
 # Install required packages for build of domserver
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
-	autoconf automake git \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+	autoconf automake git pkg-config\
 	gcc g++ make acl zip unzip \
 	php-cli php-zip \
 	php-gd php-curl php-mysql php-json php-intl \
 	php-gmp php-xml php-mbstring \
 	sudo bsdmainutils ntp libcgroup-dev procps \
-	python3-sphinx python3-sphinx-rtd-theme python3-pygments rst2pdf fontconfig python3-yaml \
+	python3-venv fontconfig python3-yaml \
 	texlive-latex-recommended texlive-latex-extra \
-	texlive-fonts-recommended texlive-lang-european latexmk \
+	texlive-fonts-recommended texlive-lang-european latexmk tex-gyre \
 	libcurl4-gnutls-dev libjsoncpp-dev libmagic-dev \
 	enscript lpr ca-certificates \
 	pkg-config \
 	&& rm -rf /var/lib/apt/lists/*
+
+# Use venv to install latest Sphinx. 6.1.0 or higher is required to build DOMjudge docs.
+RUN python3 -m venv /venv && . /venv/bin/activate && pip3 install sphinx sphinx-rtd-theme rst2pdf
 
 # Set up user
 RUN useradd -m domjudge
@@ -44,7 +47,7 @@ COPY domserver/build.sh /domjudge-src/build.sh
 RUN /domjudge-src/build.sh
 
 # Now create an image with the actual build in it
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -58,16 +61,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
 	DJ_DB_INSTALL_BARE=0
 
 # Need to add php 8 repo
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
 	lsb-release ca-certificates apt-transport-https software-properties-common gnupg2 curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
 RUN curl -fsSL  https://packages.sury.org/php/apt.gpg| gpg --dearmor -o /etc/apt/trusted.gpg.d/sury-keyring.gpg
 
+# Set up user
+RUN useradd -m domjudge
+
 # Install required packages for running of domserver
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
 	acl curl zip unzip supervisor mariadb-client apache2-utils \
 	nginx php-cli php-fpm php-zip \
 	php-gd php-curl php-mysql php-json php-intl \

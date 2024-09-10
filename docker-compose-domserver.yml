@@ -5,7 +5,7 @@ services:
     container_name: domserver
     image: itsniklas/domjudge-domserver-nightly:latest
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup
       - domserver_public_images:/opt/domjudge/domserver/webapp/public/images
       - domserver_public_css:/opt/domjudge/domserver/webapp/public/css/custom
       - domserver_public_js:/opt/domjudge/domserver/webapp/public/js/custom

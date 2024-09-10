@@ -10,21 +10,24 @@ ENV DEBIAN_FRONTEND=noninteractive \
 	DOMJUDGE_CREATE_WRITABLE_TEMP_DIR=0 \
 	RUN_USER_UID_GID=62860
 
+# Set up user
+RUN useradd -m domjudge
+
 # Install required packages for running of judgehost
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
-	dumb-init \
-	acl zip unzip supervisor sudo procps libcgroup1 \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+	dumb-init pkg-config \
+	acl lsof zip unzip supervisor sudo procps libcgroup2 \
 	php-cli php-zip php-gd php-curl php-mysql php-json \
 	php-gmp php-xml php-mbstring python3 \
-	gcc g++ default-jre-headless default-jdk ghc fp-compiler \
+	gcc g++ default-jre-headless default-jdk-headless ghc fp-compiler \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install more languages
 COPY judgehost/add_repositories.sh /add_repositories.sh
 RUN chmod 700 /add_repositories.sh && /add_repositories.sh && rm -f /add_repositories.sh
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
 	openjdk-17-jre-headless openjdk-17-jdk-headless pypy3 icpc-kotlinc \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -39,7 +42,7 @@ COPY judgehost/scripts /scripts/
 # Make the scripts available to the root user
 ENV PATH="$PATH:/opt/domjudge/judgehost/bin"
 
-# Change start script permissions, add user and fix permissions
+# Run customizations
 COPY judgehost/configure.sh /configure.sh
 RUN chmod 700 /configure.sh && /configure.sh && rm -f /configure.sh
 

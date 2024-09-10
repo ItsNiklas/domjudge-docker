@@ -6,9 +6,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY judgehost/add_repositories.sh /scripts/add_repositories.sh
 
 # Install required packages for build of judgehost
-RUN apt update \
-	&& apt install --no-install-recommends --no-install-suggests -y \
-	autoconf automake git \
+RUN apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+	autoconf automake git pkg-config \
 	gcc g++ make zip unzip \
 	php-cli php-zip lsb-release debootstrap \
 	php-gd php-curl php-mysql php-json \

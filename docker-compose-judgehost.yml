@@ -4,7 +4,7 @@ x-common-configuration: &common-configuration
   image: itsniklas/domjudge-judgehost-nightly:latest
   restart: on-failure:5
   volumes:
-    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    - /sys/fs/cgroup:/sys/fs/cgroup
   privileged: true
   env_file:
     - judgehost.env
