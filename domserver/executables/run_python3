@@ -19,7 +19,7 @@ if [ -z "$ENTRY_POINT" ]; then
 fi
 
 # Check syntax
-python3.11 -m py_compile "$@"
+python3.13 -m py_compile "$@"
 EXITCODE=$?
 [ "$EXITCODE" -ne 0 ] && exit $EXITCODE
 rm -f -- *.pyc
@@ -48,7 +48,7 @@ export HOME=/does/not/exist
 # debugging.
 export ONLINE_JUDGE=1 DOMJUDGE=1
 
-exec python3.11 "$MAINSOURCE" "\$@"
+exec python3.13 "$MAINSOURCE" "\$@"
 EOF
 
 chmod a+x "$DEST"

@@ -126,10 +126,10 @@ As of writing, the following languages are installed:
 - C (gcc 12.1 with C2X)
 - C++ (gcc 12.1 with C++23)
 - Haskell (GHC 8.8)
-- Java (OpenJDK 19)
+- Java (OpenJDK 21)
 - JavaScript (Node.js 20.3 with ES2023)
 - PyPy3 (7.3 with Python 3.9)
-- Python3 (Python 3.11) (with numpy & scipy)
+- Python3 (Python 3.13) (with numpy & scipy)
 - Rust (Rust 1.65)
 
 ## Updating
@@ -157,4 +157,3 @@ try to find help in the source code, or ask me.
 ## Credits
 
 This repository is based on [WISVCH/docker-domjudge](https://github.com/WISVCH/docker-domjudge) with aspects of [DOMjudge/domjudge](https://github.com/DOMjudge/domjudge/) and more.
-
