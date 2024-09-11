@@ -23,8 +23,8 @@ install_java() {
 
 install_pypy3() {
 	# Python in root may be required for custom compare scripts.
-	CHROOT_PACKAGES="python3.13-full python3-pip pypy3 $CHROOT_PACKAGES"
-	DEB_PACKAGES="python3.13-full python3-pip pypy3 $DEB_PACKAGES"
+	CHROOT_PACKAGES="python3.13-full python3.13-distutils python3-pip pypy3 $CHROOT_PACKAGES"
+	DEB_PACKAGES="python3.13-full python3.13-distutils python3-pip pypy3 $DEB_PACKAGES"
 }
 
 install_csharp() {

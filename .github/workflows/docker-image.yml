@@ -3,6 +3,9 @@ name: Build and Publish DOMjudge
 on:
   schedule:
     - cron: '0 2 * * *' # Runs every day at 2 AM Z
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
