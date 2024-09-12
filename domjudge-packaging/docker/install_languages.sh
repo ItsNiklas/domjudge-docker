@@ -23,8 +23,8 @@ install_java() {
 
 install_pypy3() {
 	# Python in root may be required for custom compare scripts.
-	CHROOT_PACKAGES="python3.13-full python3.13-distutils python3-pip pypy3 $CHROOT_PACKAGES"
-	DEB_PACKAGES="python3.13-full python3.13-distutils python3-pip pypy3 $DEB_PACKAGES"
+	CHROOT_PACKAGES="python3.13-full pypy3 $CHROOT_PACKAGES"
+	DEB_PACKAGES="python3.13-full pypy3 $DEB_PACKAGES"
 }
 
 install_csharp() {
@@ -48,30 +48,30 @@ install_hs() {
 
 
 install_debs() {
-	/opt/domjudge/judgehost/bin/dj_run_chroot '
-	apt update && apt install -y software-properties-common gnupg &&
-	apt-add-repository -y "deb https://ppa.launchpadcontent.net/pypy/ppa/ubuntu jammy main" &&
-	add-apt-repository ppa:deadsnakes/ppa &&
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 2862D0785AFACD8C65B23DB0251104D968854915
-	'
+	/opt/domjudge/judgehost/bin/dj_run_chroot "
+	apt update && apt install -y software-properties-common curl &&
+	add-apt-repository ppa:pypy/ppa -y &&
+	add-apt-repository ppa:deadsnakes/ppa -y
+	curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && # New node version
+	"
 
 	# execute commands in chroot
 	/opt/domjudge/judgehost/bin/dj_run_chroot "export DEBIAN_FRONTEND=noninteractive &&
 	apt update &&
 	apt install -y --no-install-recommends --no-install-suggests ${CHROOT_PACKAGES} &&
-	curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && # New node version
-	apt install nodejs && # New node version
-	add-apt-repository ppa:deadsnakes/ppa &&
-	python3.13 -m pip install --no-input ${PY_PACKAGES} &&
+	python3.13 -m ensurepip && python3.13 -m pip install --no-input ${PY_PACKAGES} &&
 	apt autoremove -y &&
 	apt clean &&
 	rm -rf /var/lib/apt/lists/* &&
 	rm -rf /tmp/*"
 
 	# execute command on home root
+	apt update && apt install -y software-properties-common curl &&
+	apt-add-repository ppa:pypy/ppa -y &&
+	add-apt-repository ppa:deadsnakes/ppa -y &&
 	apt update &&
 	apt install -y --no-install-recommends --no-install-suggests ${DEB_PACKAGES} &&
-	python3.13 -m pip install --no-input ${PY_PACKAGES} &&
+	python3.13 -m ensurepip && python3.13 -m pip install --no-input ${PY_PACKAGES} &&
 	apt autoremove -y &&
 	apt clean &&
 	rm -rf /var/lib/apt/lists/* &&
