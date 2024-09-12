@@ -49,10 +49,10 @@ install_hs() {
 
 install_debs() {
 	/opt/domjudge/judgehost/bin/dj_run_chroot "
-	apt update && apt install -y software-properties-common curl &&
+	apt update && apt install -y software-properties-common curl gnupg &&
 	add-apt-repository ppa:pypy/ppa -y &&
-	add-apt-repository ppa:deadsnakes/ppa -y
-	curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && # New node version
+	add-apt-repository ppa:deadsnakes/ppa -y &&
+	curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 	"
 
 	# execute commands in chroot
@@ -66,7 +66,7 @@ install_debs() {
 	rm -rf /tmp/*"
 
 	# execute command on home root
-	apt update && apt install -y software-properties-common curl &&
+	apt update && apt install -y software-properties-common curl gnupg &&
 	apt-add-repository ppa:pypy/ppa -y &&
 	add-apt-repository ppa:deadsnakes/ppa -y &&
 	apt update &&
