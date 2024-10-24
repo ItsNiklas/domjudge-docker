@@ -10,6 +10,7 @@ services:
       - domserver_public_css:/opt/domjudge/domserver/webapp/public/css/custom
       - domserver_public_js:/opt/domjudge/domserver/webapp/public/js/custom
       - domserver_public_docs:/opt/domjudge/domserver/webapp/public/docs
+      - domserver_public_favicon:/opt/domjudge/domserver/webapp/public/favicon.ico
     privileged: true
     ports:
       - 12345:80
