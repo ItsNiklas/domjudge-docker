@@ -55,6 +55,7 @@ volumes:
   domserver_public_css:
   domserver_public_js:
   domserver_public_docs:
+  domserver_public_favicon:
 
 
 networks:
