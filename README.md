@@ -129,7 +129,7 @@ As of writing, the following languages are installed:
 - Java (OpenJDK 21)
 - JavaScript (Node.js 20.3 with ES2023)
 - PyPy3 (8.0 with Python 3.11)
-- Python3 (Python 3.13) (with numpy & scipy)
+- Python3 (Python 3.13 and 3.15) (with numpy & scipy)
 - Rust (Rust 1.75)
 
 ## Updating
