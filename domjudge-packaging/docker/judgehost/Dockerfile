@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -24,11 +24,9 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install more languages
-COPY judgehost/add_repositories.sh /add_repositories.sh
-RUN chmod 700 /add_repositories.sh && /add_repositories.sh && rm -f /add_repositories.sh
 RUN apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y \
-	openjdk-17-jre-headless openjdk-17-jdk-headless pypy3 icpc-kotlinc \
+	openjdk-17-jre-headless openjdk-17-jdk-headless pypy3 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Add chroot and judgehost data

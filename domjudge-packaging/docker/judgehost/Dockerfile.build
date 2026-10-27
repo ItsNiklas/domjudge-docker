@@ -1,9 +1,7 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-COPY judgehost/add_repositories.sh /scripts/add_repositories.sh
 
 # Install required packages for build of judgehost
 RUN apt-get update \

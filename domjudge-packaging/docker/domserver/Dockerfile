@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim AS domserver-build
+FROM debian:trixie-slim AS domserver-build
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Need to add php 8 repo
 RUN apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y \
-	lsb-release ca-certificates apt-transport-https software-properties-common gnupg2 curl \
+	lsb-release ca-certificates apt-transport-https gnupg2 curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
 RUN curl -fsSL  https://packages.sury.org/php/apt.gpg| gpg --dearmor -o /etc/apt/trusted.gpg.d/sury-keyring.gpg
@@ -19,7 +19,7 @@ RUN apt-get update \
 	php-cli php-zip \
 	php-gd php-curl php-mysql php-json php-intl \
 	php-gmp php-xml php-mbstring php-bcmath \
-	sudo bsdmainutils ntp libcgroup-dev procps \
+	sudo bsdmainutils libcgroup-dev procps \
 	python3-venv fontconfig python3-yaml \
 	texlive-latex-recommended texlive-latex-extra \
 	texlive-fonts-recommended texlive-lang-european latexmk tex-gyre \
@@ -54,7 +54,7 @@ COPY domserver/build.sh /domjudge-src/build.sh
 RUN /domjudge-src/build.sh
 
 # Now create an image with the actual build in it
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 LABEL org.opencontainers.image.authors="DOMjudge team <team@domjudge.org>"
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -70,7 +70,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Need to add php 8 repo
 RUN apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y \
-	lsb-release ca-certificates apt-transport-https software-properties-common gnupg2 curl \
+	lsb-release ca-certificates apt-transport-https gnupg2 curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
 RUN curl -fsSL  https://packages.sury.org/php/apt.gpg| gpg --dearmor -o /etc/apt/trusted.gpg.d/sury-keyring.gpg
@@ -86,7 +86,7 @@ RUN apt-get update \
 	php-gd php-curl php-mysql php-json php-intl \
 	php-gmp php-xml php-mbstring php-ldap php-bcmath \
 	enscript \
-	printer-driver-all cups cups-pdf cups-client cups-bsd cups-filters \
+	printer-driver-all cups printer-driver-cups-pdf cups-client cups-bsd cups-filters \
 	ca-certificates python3-yaml \
 	vim wget httpie nano \
 	&& rm -rf /var/lib/apt/lists/*

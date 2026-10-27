@@ -42,7 +42,7 @@ install_js() {
 # Flag for Haskell installation
 HS_INSTALLED=0
 install_hs() {
-	CHROOT_PACKAGES="haskell-platform ghc $CHROOT_PACKAGES"
+	CHROOT_PACKAGES="ghc $CHROOT_PACKAGES"
 	HS_INSTALLED=1
 }
 
@@ -77,15 +77,15 @@ install_debs() {
 	rm -rf /var/lib/apt/lists/* &&
 	rm -rf /tmp/*
 
-	# Haskell's GHC compiler looks for packages in the /usr/lib/ghc/package.conf.d directory.
-	# However, /usr/lib/ghc/package.conf.d is symlinked to /var/lib/ghc/package.conf.d, which is not mounted during compilation in the chroot.
+	# Haskell's GHC compiler looks for packages in the /usr/lib/ghc/lib/package.conf.d directory.
+	# However, /usr/lib/ghc/lib/package.conf.d is symlinked to /var/lib/ghc/package.conf.d, which is not mounted during compilation in the chroot.
 	# This means that although the packages are correctly installed into /var/lib/ghc/package.conf.d, GHC cannot find them.
-	# To resolve this issue, we manually move the installed packages from /var/lib/ghc/package.conf.d to /usr/lib/ghc/package.conf.d,
+	# To resolve this issue, we manually move the installed packages from /var/lib/ghc/package.conf.d to /usr/lib/ghc/lib/package.conf.d,
 	# so that they are placed in a persistent and accessible location for GHC to find when compiling Haskell programs.
 	if [ $HS_INSTALLED -eq 1 ]; then
         	# execute commands in chroot
             	/opt/domjudge/judgehost/bin/dj_run_chroot "
-            	rm -r /usr/lib/ghc/package.conf.d && cp -R /var/lib/ghc/package.conf.d /usr/lib/ghc/package.conf.d" # FIX HASKELL
+            	rm -r /usr/lib/ghc/lib/package.conf.d && cp -R /var/lib/ghc/package.conf.d /usr/lib/ghc/lib/package.conf.d" # FIX HASKELL
         fi
 }
 
@@ -101,7 +101,6 @@ install_hs
 # Enable networking in chroot
 mv ${CHROOT}/etc/resolv.conf ${CHROOT}/etc/resolv.conf.bak
 cp /etc/resolv.conf ${CHROOT}/etc
-cp /etc/apt/sources.list ${CHROOT}/etc/apt/sources.list
 
 install_debs
 

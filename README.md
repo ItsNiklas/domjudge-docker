@@ -110,7 +110,7 @@ Then run `sudo update-grub` and reboot.
 
 ### Judgehost Configuration
 
-The judgehost is based on `ubuntu:jammy`. If you want to support more programming languages, you need to edit
+The judgehost is based on `ubuntu:24.04` (noble). If you want to support more programming languages, you need to edit
 `install_languages.sh` inside the docker folder to enable, disable, add or update languages.
 You can add arbitrary packages or PPAs to support more. Currently, the
 script tries to install up-to-date versions of the languages, as of writing.
@@ -125,12 +125,12 @@ As of writing, the following languages are installed:
 - Bash (GNU Bash 5.1)
 - C (gcc 12.1 with C2X)
 - C++ (gcc 12.1 with C++23)
-- Haskell (GHC 8.8)
+- Haskell (GHC 9.4)
 - Java (OpenJDK 21)
 - JavaScript (Node.js 20.3 with ES2023)
-- PyPy3 (7.3 with Python 3.9)
+- PyPy3 (8.0 with Python 3.11)
 - Python3 (Python 3.13) (with numpy & scipy)
-- Rust (Rust 1.65)
+- Rust (Rust 1.75)
 
 ## Updating
 
