@@ -32,8 +32,8 @@ RUN apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y \
         nodejs npm \
         ca-certificates curl gnupg \
-    && corepack enable \
-    && corepack prepare yarn@stable --activate
+	&& npm install -g yarn
+
 
 # Use venv to install latest Sphinx. 6.1.0 or higher is required to build DOMjudge docs.
 RUN python3 -m venv /venv && . /venv/bin/activate && pip3 install sphinx sphinx-rtd-theme rst2pdf
